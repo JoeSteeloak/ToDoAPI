@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { IsString, IsOptional, Length, IsIn } from 'class-validator';
 
-const statuses = ['not started', 'started', 'finished'] as const;
+const statuses = ['not started', 'in progress', 'finished'] as const;
 export type Status = typeof statuses[number];
 
 @Entity()
