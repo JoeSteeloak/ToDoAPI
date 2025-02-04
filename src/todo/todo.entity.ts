@@ -1,5 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-import { IsString, IsOptional, Length } from 'class-validator';
+import { IsString, IsOptional, Length, IsIn } from 'class-validator';
+
+const statuses = ['not started', 'started', 'finished'] as const;
+export type Status = typeof statuses[number];
 
 @Entity()
 export class Todo {
@@ -14,10 +17,11 @@ export class Todo {
     @Column()
     @IsString()
     @IsOptional()
-    @Length(1, 255, { message: 'description must be between 1 and 255 characters long.' })
+    @Length(1, 255, { message: 'Description must be between 1 and 255 characters long.' })
     description: string;
 
     @Column()
     @IsString()
+    @IsIn(statuses)
     status: string;
 }

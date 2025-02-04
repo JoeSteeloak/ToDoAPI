@@ -1,37 +1,37 @@
 import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
 import { TodosService } from './todos.service';
-import { Todos } from '../todo/todo.entity';
+import { Todo } from '../todo/todo.entity';
 import { validate } from 'class-validator';
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-@Controller('games')
-export class GamesController {
-    constructor(private readonly gamesService: TodosService) { }
+@Controller('todos')
+export class TodosController {
+    constructor(private readonly todosService: TodosService) { }
 
     // Hämta alla spel
     @Get()
-    findAll(): Promise<Game[]> {
-        return this.gamesService.findAll();
+    findAll(): Promise<Todo[]> {
+        return this.todosService.findAll();
     }
 
     // Hämta ett spel med specifikt id
     @Get(':id')
-    async findOne(@Param('id') id: number): Promise<Game> {
-        const game = await this.gamesService.findOne(id);
-        if (!game) {
-            throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
+    async findOne(@Param('id') id: number): Promise<Todo> {
+        const todo = await this.todosService.findOne(id);
+        if (!todo) {
+            throw new HttpException('Todo not found', HttpStatus.NOT_FOUND);
         }
-        return game;
+        return todo;
     }
 
     // Skapa ett nytt spel
     @Post()
-    async create(@Body() game: Game): Promise<Game> {
-        // Skapa en instans av Game och lägg till data
-        const newGame = Object.assign(new Game(), game);
+    async create(@Body() todo: Todo): Promise<Todo> {
+        // Skapa en instans av Todo och lägg till data
+        const newTodo = Object.assign(new Todo(), todo);
 
         // Validera objektet
-        const errors = await validate(newGame);
+        const errors = await validate(newTodo);
         if (errors.length > 0) {
             // Extrahera och formatera felmeddelanden
             const errorMessages = errors.map(err => Object.values(err.constraints || {})).flat();
@@ -41,20 +41,20 @@ export class GamesController {
             );
         }
         // Om valideringen lyckas, fortsätt skapa spelet
-        return this.gamesService.create(newGame);
+        return this.todosService.create(newTodo);
     }
 
     // Uppdatera ett spel
     @Put(':id')
-    async update(@Param('id') id: number, @Body() game: Game): Promise<Game> {
-        const existingGame = await this.gamesService.findOne(id);
-        if (!existingGame) {
-            throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
+    async update(@Param('id') id: number, @Body() todo: Todo): Promise<Todo> {
+        const existingTodo = await this.todosService.findOne(id);
+        if (!existingTodo) {
+            throw new HttpException('Todo not found', HttpStatus.NOT_FOUND);
         }
 
         // Validera inkommande uppdateringar
-        const updatedGame = Object.assign(existingGame, game);
-        const errors = await validate(updatedGame);
+        const updatedTodo = Object.assign(existingTodo, todo);
+        const errors = await validate(updatedTodo);
         if (errors.length > 0) {
             const errorMessages = errors.map(err => Object.values(err.constraints || {})).flat();
             throw new HttpException(
@@ -63,18 +63,18 @@ export class GamesController {
             );
         }
 
-        return this.gamesService.update(id, updatedGame);
+        return this.todosService.update(id, updatedTodo);
     }
 
 
     // Ta bort ett spel
     @Delete(':id')
     async remove(@Param('id') id: number): Promise<void> {
-        const game = await this.gamesService.findOne(id);
-        if (!game) {
-            throw new HttpException('Game not found', HttpStatus.NOT_FOUND);
+        const todo = await this.todosService.findOne(id);
+        if (!todo) {
+            throw new HttpException('Todo not found', HttpStatus.NOT_FOUND);
         }
-        return this.gamesService.remove(id);
+        return this.todosService.remove(id);
     }
 
 }
