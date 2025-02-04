@@ -20,7 +20,7 @@ export class Todo {
     @Length(1, 255, { message: 'Description must be between 1 and 255 characters long.' })
     description: string;
 
-    @Column()
+    @Column({ default: 'not started' })
     @IsString()
     @IsIn(statuses)
     status: string;
