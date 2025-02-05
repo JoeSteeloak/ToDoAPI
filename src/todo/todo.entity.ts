@@ -11,13 +11,13 @@ export class Todo {
 
     @Column()
     @IsString()
-    @Length(1, 255, { message: 'Title must be between 1 and 255 characters long.' })
+    @Length(3, 200, { message: 'Title must be between 1 and 255 characters long.' })
     title: string;
 
     @Column()
     @IsString()
     @IsOptional()
-    @Length(1, 255, { message: 'Description must be between 1 and 255 characters long.' })
+    @Length(1, 200, { message: 'Description must be between 1 and 255 characters long.' })
     description: string;
 
     @Column({ default: 'not started' })
