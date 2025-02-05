@@ -8,13 +8,13 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 export class TodosController {
     constructor(private readonly todosService: TodosService) { }
 
-    // Hämta alla spel
+    // Hämta alla poster
     @Get()
     findAll(): Promise<Todo[]> {
         return this.todosService.findAll();
     }
 
-    // Hämta ett spel med specifikt id
+    // Hämta en post med specifikt id
     @Get(':id')
     async findOne(@Param('id') id: number): Promise<Todo> {
         const todo = await this.todosService.findOne(id);
@@ -24,7 +24,7 @@ export class TodosController {
         return todo;
     }
 
-    // Skapa ett nytt spel
+    // Skapa en ny post
     @Post()
     async create(@Body() todo: Todo): Promise<Todo> {
         // Skapa en instans av Todo och lägg till data
@@ -44,17 +44,19 @@ export class TodosController {
         return this.todosService.create(newTodo);
     }
 
-    // Uppdatera ett spel
+    // Uppdatera en post
     @Put(':id')
-    async update(@Param('id') id: number, @Body() todo: Todo): Promise<Todo> {
+    async update(@Param('id') id: number, @Body() partialTodo: Partial<Todo>): Promise<Todo> {
         const existingTodo = await this.todosService.findOne(id);
         if (!existingTodo) {
             throw new HttpException('Todo not found', HttpStatus.NOT_FOUND);
         }
-
-        // Validera inkommande uppdateringar
-        const updatedTodo = Object.assign(existingTodo, todo);
-        const errors = await validate(updatedTodo);
+    
+        // Uppdatera endast de fält som skickas i body
+        Object.assign(existingTodo, partialTodo);
+    
+        // Validera endast om nödvändiga fält finns kvar
+        const errors = await validate(existingTodo);
         if (errors.length > 0) {
             const errorMessages = errors.map(err => Object.values(err.constraints || {})).flat();
             throw new HttpException(
@@ -62,12 +64,13 @@ export class TodosController {
                 HttpStatus.BAD_REQUEST,
             );
         }
-
-        return this.todosService.update(id, updatedTodo);
+    
+        return this.todosService.update(id, existingTodo);
     }
+    
 
 
-    // Ta bort ett spel
+    // Ta bort en post
     @Delete(':id')
     async remove(@Param('id') id: number): Promise<void> {
         const todo = await this.todosService.findOne(id);
